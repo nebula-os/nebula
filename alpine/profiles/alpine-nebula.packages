@@ -1,0 +1,8 @@
+bkeymaps
+nebula-base
+alpine-mirrors
+network-extras
+openssl
+openssh
+chrony
+tzdata

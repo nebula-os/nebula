@@ -1,0 +1,223 @@
+# Contributor: Oleksii Halahan <ahalahan@gmail.com>
+# Maintainer: Oleksii Halahan <ahalahan@gmail.com>
+pkgname=nebula-baselayout
+pkgver=0.0.1
+pkgrel=0
+pkgdesc="Nebula OS base dir structure and init scripts"
+url="https://github.com/skyne98/nebula/alpine/packages/nebula-baselayout"
+arch="all"
+license="GPL-2.0"
+pkggroups="shadow"
+options="!fhs"
+install="$pkgname.pre-install $pkgname.pre-upgrade $pkgname.post-upgrade
+	$pkgname.post-install"
+source="mkmntdirs.c
+	crontab
+	color_prompt
+
+	aliases.conf
+	blacklist.conf
+	i386.conf
+	kms.conf
+
+	group
+	inittab
+	passwd
+	profile
+	protocols
+	services
+	"
+builddir="$srcdir/build"
+
+prepare() {
+	mkdir -p "$builddir"
+}
+
+build() {
+	cd "$builddir"
+	${CC:-${CROSS_COMPILE}gcc} $CPPFLAGS $CFLAGS $LDFLAGS \
+		"$srcdir"/mkmntdirs.c -o "$builddir"/mkmntdirs
+
+	# generate shadow
+	awk -F: '{
+		pw = ":!:"
+		if ($1 == "root") { pw = "::" }
+		print($1 pw ":0:::::")
+	}' "$srcdir"/passwd > shadow
+}
+
+package() {
+	mkdir -p "$pkgdir"
+	cd "$pkgdir"
+	install -m 0755 -d \
+		dev \
+		dev/pts \
+		dev/shm \
+		etc \
+		etc/apk \
+		etc/conf.d \
+		etc/crontabs \
+		etc/init.d \
+		etc/modprobe.d \
+		etc/modules-load.d \
+		etc/network/if-down.d \
+		etc/network/if-post-down.d \
+		etc/network/if-pre-up.d \
+		etc/network/if-up.d \
+		etc/opt \
+		etc/periodic/15min \
+		etc/periodic/daily \
+		etc/periodic/hourly \
+		etc/periodic/monthly \
+		etc/periodic/weekly \
+		etc/profile.d \
+		etc/sysctl.d \
+		home \
+		lib/firmware \
+		lib/mdev \
+		media/cdrom \
+		media/floppy \
+		media/usb \
+		mnt \
+		proc \
+		opt \
+		run \
+		sbin \
+		srv \
+		sys \
+		usr/bin \
+		usr/local/bin \
+		usr/local/lib \
+		usr/local/share \
+		usr/sbin \
+		usr/share \
+		usr/share/man \
+		usr/share/misc \
+		var/cache \
+		var/cache/misc \
+		var/lib \
+		var/lib/misc \
+		var/local \
+		var/lock/subsys \
+		var/log \
+		var/opt \
+		var/spool \
+		var/spool/cron
+
+	ln -s /run var/run
+	install -d -m 0555 var/empty
+	install -d -m 0700 "$pkgdir"/root
+	install -d -m 1777 "$pkgdir"/tmp "$pkgdir"/var/tmp
+	install -m755 "$builddir"/mkmntdirs "$pkgdir"/sbin/mkmntdirs
+
+	install -m600 "$srcdir"/crontab "$pkgdir"/etc/crontabs/root
+	install -m644 "$srcdir"/color_prompt "$pkgdir"/etc/profile.d/
+	install -m644 \
+		"$srcdir"/aliases.conf \
+		"$srcdir"/blacklist.conf \
+		"$srcdir"/i386.conf \
+		"$srcdir"/kms.conf \
+		"$pkgdir"/etc/modprobe.d/
+
+	echo "UTC" > "$pkgdir"/etc/TZ
+	echo "localhost" > "$pkgdir"/etc/hostname
+	cat > "$pkgdir"/etc/hosts <<-EOF
+		127.0.0.1	localhost localhost.localdomain
+		::1		localhost localhost.localdomain
+	EOF
+	cat > "$pkgdir"/etc/modules <<-EOF
+		af_packet
+		ipv6
+	EOF
+	cat > "$pkgdir"/etc/shells <<-EOF
+		# valid login shells
+		/bin/sh
+		/bin/ash
+	EOF
+	cat > "$pkgdir"/etc/motd <<-EOF
+		Welcome to Nebula OS!
+
+		The Alpine Wiki contains a large amount of how-to guides and general
+		information about administrating Alpine systems.
+		See <http://wiki.alpinelinux.org/>.
+
+		You can setup the system with the command: setup-alpine
+
+		You may change this message by editing /etc/motd.
+
+	EOF
+	cat > "$pkgdir"/etc/sysctl.conf <<-EOF
+		# content of this file will override /etc/sysctl.d/*
+	EOF
+	cat > "$pkgdir"/etc/sysctl.d/00-alpine.conf <<-EOF
+		# Prevents SYN DOS attacks. Applies to ipv6 as well, despite name.
+		net.ipv4.tcp_syncookies = 1
+
+		# Prevents ip spoofing.
+		net.ipv4.conf.default.rp_filter = 1
+		net.ipv4.conf.all.rp_filter = 1
+
+		# Only groups within this id range can use ping.
+		net.ipv4.ping_group_range=999 59999
+
+		# Redirects can potentially be used to maliciously alter hosts
+		# routing tables.
+		net.ipv4.conf.all.accept_redirects = 0
+		net.ipv4.conf.all.secure_redirects = 1
+		net.ipv6.conf.all.accept_redirects = 0
+
+		# The source routing feature includes some known vulnerabilities.
+		net.ipv4.conf.all.accept_source_route = 0
+		net.ipv6.conf.all.accept_source_route = 0
+
+		# See RFC 1337
+		net.ipv4.tcp_rfc1337 = 1
+
+		## Enable IPv6 Privacy Extensions (see RFC4941 and RFC3041)
+		net.ipv6.conf.default.use_tempaddr = 2
+		net.ipv6.conf.all.use_tempaddr = 2
+
+		# Restarts computer after 120 seconds after kernel panic
+		kernel.panic = 120
+
+		# Users should not be able to create soft or hard links to files
+		# which they do not own. This mitigates several privilege
+		# escalation vulnerabilities.
+		fs.protected_hardlinks = 1
+		fs.protected_symlinks = 1
+	EOF
+	cat > "$pkgdir"/etc/fstab <<-EOF
+		/dev/cdrom	/media/cdrom	iso9660	noauto,ro 0 0
+		/dev/usbdisk	/media/usb	vfat	noauto,ro 0 0
+	EOF
+
+	install -m644 \
+		"$srcdir"/group \
+		"$srcdir"/passwd \
+		"$srcdir"/inittab \
+		"$srcdir"/profile \
+		"$srcdir"/protocols \
+		"$srcdir"/services \
+		"$pkgdir"/etc/
+
+	install -m640 -g shadow "$builddir"/shadow \
+		"$pkgdir"/etc/
+
+	# symlinks
+	ln -s /etc/crontabs "$pkgdir"/var/spool/cron/crontabs
+	ln -s /proc/mounts "$pkgdir"/etc/mtab
+}
+
+sha512sums="02ce178085f333048d766a6138d69136fccf1e373e561c2ed2da43fd15b1910662b30d6d6b8dccc2857bd41cefef17f11e8131ed9887397d180b2a1b9d63f20a  mkmntdirs.c
+e06c10265f088091718fceb05863fd2913ab08087fb381917fd9a2c981d6e2a53555885e1260939e50909b9645394cfdd464906dbef849ec7bd0a9dcf0aa21db  crontab
+8b898fc51848e764422912ba55c28d8307f7a308df7d8bf3586a562a1ed575f44c9a40b49641732f75ea7d90b7ae069969ad784fa20efaa2c3569887be4df6f1  color_prompt
+d6800d8444f122b2a9dac7900d14c058d7094c0cb4e6ce50b5662a249ad8cc8dc92644005760543f713e7f8b3f0691df79bbd4c0535d564d7464955752dd25d2  aliases.conf
+2b8e55339955c9670b5b9832bf57e711aca70cd2ebf815a9623fbb7fcd440cca4dd6a4862750885f779080d5c5416de197ff9a250cf116b1c8cf130fafbdaae8  blacklist.conf
+f248bae2825891ff8c255ba7c34b73be034cd2388b786a8ae14db37f67aa7e906301b6ac01e32a0a70e1a14c22443817e54b4bd5e78f2c0f73c094cb20c5a872  i386.conf
+a49afd4e86f7756b0dbf56a5998976bd3853708243c1c93f59522a501fd9b380b39f3cedd0ad4231f7c3b5840569d6cebd38856126e7df53d868f6fd0a9009d4  kms.conf
+a4df1d4b888e8ad67a01a591ec3c00f1a931dc29f3c8488030e30d9f956bdb792e8ad8a91f5df796da981f651e4953c38f4d213145feb716eff1cf4616f70413  group
+4ac6460c6c7a439d529b8d936b241c1eca6524f696b4a63e579889429f194a8fb45f23de48f7122a939ca8e8ec4c9283d0b9fe9c9c25fb969341fcfc11b79d0e  inittab
+5f789b87cdba748f679e7c4718f379e048853f070017ed8839827dd4d3cfef890ded530ee0e86fbcc577eaf6df77c8f47ee1c6010bbefae6fb4023a4387f2924  passwd
+a5aaceadd0bb09d4ab21e246746bf417976a3fbdcc4515dfcfb4c1a92defdcbcd72181c37abacdd003bfa21dc04acc0c10922b6a25d32110b7f824cc65a70e82  profile
+0c6653e5e5030a32cdb77269c8abd60f800e400b1de305663762b269cb23c264f02a461e770e443df07b3cb5bf142bd1c40d72c46d97873694980c5c23ff1531  protocols
+d180f2486580a6c381ba8bb52e2eba27f2a71c5a0899680be387ee3e8452ad22acc8f72981f6f7146314970816821a642cf89cbeda8ae7d4e701077cc0b9c315  services"
