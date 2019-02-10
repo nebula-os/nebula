@@ -1,0 +1,10 @@
+1. Check why the system is not booting correctly
+    * Maybe you are not supposed to manually install the packages before the script is run
+2. Research the package managers
+    * Maybe look into how apk works
+    * Look into how cargo works
+    * Look into third-party research on the topic
+    * Maybe look at nix
+3. Make a plan about the proof of concept
+4. Create a basic npk project in rust
+5. Make a basic npk (Nebula Package Keeper) package for Alpine

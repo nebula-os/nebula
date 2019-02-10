@@ -1,12 +1,12 @@
 # Nebula OS build crate
 # We infer that there are /nebula and /nebula-work folders mounted
-FROM alpine:3.7
+FROM alpine:latest
 
 # Mount the folder
 WORKDIR /nebula-work
 
 # Install the dependencies
-RUN apk add alpine-sdk xorriso syslinux
+RUN apk add alpine-sdk squashfs-tools mkinitfs xorriso syslinux
 RUN abuild-keygen -i -a
 
 # Generate the iso
@@ -16,9 +16,6 @@ ENV profile alpine-nebula
 CMD cp /nebula/. /nebula-work/ -rf ;\
     # Install the packages
     export APK_REPOS=/nebula-package ;\
-    apk del alpine-baselayout ;\
-    apk add nebula-baselayout --update-cache --repository /nebula-package --allow-untrusted ;\
-    apk add nebula-base --update-cache --repository /nebula-package --allow-untrusted ;\
     # Copy our profiles into the iso/ directory
     echo "Copying the profiles..." ;\
     cp /nebula/profiles/. /nebula-work/iso/ -rf ;\

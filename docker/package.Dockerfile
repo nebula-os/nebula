@@ -1,6 +1,6 @@
 # Nebula OS alpine packages build crate
 # We infer that there are /nebula and /nebula-work folders mounted
-FROM alpine:3.7
+FROM alpine:latest
 
 # Setup for creating packages
 RUN apk add alpine-sdk
@@ -13,18 +13,19 @@ WORKDIR /nebula-work
 
 # Build the packages
 CMD abuild-keygen -i -a ;\
-    echo "@nebula /nebula-work/packages/x86_64" >> /etc/apk/repositories ;\
     # Build nebula-baselayout
     cd /nebula/packages/nebula-baselayout ;\
     abuild checksum ;\
     abuild -r -P /nebula-work ;\
-    sudo apk del alpine-baselayout ;\
     # Build nebula-base
     cd /nebula/packages/nebula-base ;\
     abuild checksum ;\
     abuild -r -P /nebula-work ;\
+    # Build nebula-init
+    cd /nebula/packages/nebula-init ;\
+    abuild checksum ;\
+    abuild -r -P /nebula-work ;\
     # Re-own the directories
-    sudo chown -R builder:abuild /home/builder/packages ;\
     sudo chown -R builder:abuild /nebula-work ;\
     cat /etc/apk/repositories ;\
     # Do some files maintenance

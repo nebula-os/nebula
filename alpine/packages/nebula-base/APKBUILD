@@ -26,7 +26,7 @@ package() {
 
 	# create /etc/issue
 	cat >"$pkgdir"/etc/issue<<EOF
-Welcome to Alpine Linux ${pkgver%.*}
+Welcome to Nebula Linux ${pkgver%.*}
 Kernel \\r on an \\m (\\l)
 
 EOF

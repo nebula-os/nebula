@@ -1,0 +1,27 @@
+# Contributor: Oleksii Halahan <ahalahan@gmail.com>
+# Maintainer: Oleksii Halahan <ahalahan@gmail.com>
+pkgname=nebula-init
+pkgver=0.0.1
+pkgrel=0
+pkgdesc="Meta package for minimal Nebula OS base"
+url="https://github.com/skyne98/nebula"
+arch="noarch"
+license="MIT"
+depends=""
+makedepends=""
+install=""
+subpackages=""
+source="init"
+
+build() {
+	return 0
+}
+
+package() {
+    mkdir -p "$pkgdir"
+    cd "$pkgdir"
+
+	cp "$srcdir"/init "$pkgdir"/init -f 
+}
+
+sha512sums="e5b1afeb228dc31a1d885eab3807156f684c3dc298de10fb7a4e4a14401671063dbc4931e79b909938a01c582cb562b4399d7639c37d9636a5ff6ef38575bd4b  init"

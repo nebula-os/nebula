@@ -11,6 +11,7 @@ pkggroups="shadow"
 options="!fhs"
 install="$pkgname.pre-install $pkgname.pre-upgrade $pkgname.post-upgrade
 	$pkgname.post-install"
+replaces="alpine-baselayout"
 source="mkmntdirs.c
 	crontab
 	color_prompt

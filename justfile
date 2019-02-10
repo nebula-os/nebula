@@ -23,3 +23,8 @@ docker-iso-run: docker-iso-build docker-package-run
     rm ./work/iso -rf
     mkdir ./work/iso -p
     sudo docker run -v "$(pwd)/alpine:/nebula" -v "$(pwd)/work/iso:/nebula-work" -v "$(pwd)/work/package:/nebula-package" nebula-iso
+
+# Qemu testing
+qemu: qemu-x86_64
+qemu-x86_64:
+    qemu-system-x86_64 -boot d -cdrom work/iso/alpine-nebula.iso -m 512

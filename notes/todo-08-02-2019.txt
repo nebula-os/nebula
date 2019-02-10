@@ -1,6 +1,6 @@
-1. Make an https://git.alpinelinux.org/aports/tree/main/alpine-baselayout/APKBUILD alternative with nebula-specific changes (In Progress)
-2. Make an https://git.alpinelinux.org/aports/tree/main/alpine-base/APKBUILD alternative with nebula-specific changes
-3. Ask how to avoid the setup (make it automatic)
-4. Find out how to make UEFI-compatible ISOs
-5. Write a basic npk (Nebula Package Manager)
-6. Create a basic npk package for Alpine
+1. Make an https://git.alpinelinux.org/aports/tree/main/alpine-baselayout/APKBUILD alternative with nebula-specific changes (In Progress => Done)
+2. Make an https://git.alpinelinux.org/aports/tree/main/alpine-base/APKBUILD alternative with nebula-specific changes (Done)
+3. Ask how to avoid the setup (make it automatic) (Postponed)
+4. Find out how to make UEFI-compatible ISOs (Postponed)
+5. Write a basic npk (Nebula Package Manager) (Postponed)
+6. Create a basic npk package for Alpine (Postponed)
