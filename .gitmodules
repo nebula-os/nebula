@@ -1,0 +1,3 @@
+[submodule "alpine/iso"]
+	path = alpine/iso
+	url = git://git.alpinelinux.org/alpine-iso
