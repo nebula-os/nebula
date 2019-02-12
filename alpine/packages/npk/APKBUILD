@@ -1,0 +1,30 @@
+# Contributor: Oleksii Halahan <ahalahan@gmail.com>
+# Maintainer: Oleksii Halahan <ahalahan@gmail.com>
+pkgname=npk
+pkgver=0.0.1
+pkgrel=0
+pkgdesc="Default Nebula Package Keeper"
+url="https://github.com/skyne98/npk"
+arch="all"
+license="MIT"
+depends="cargo"
+makedepends=""
+install=""
+subpackages=""
+source="npk.tar.gz"
+
+builddir="$srcdir"/npk
+
+build() {
+	# Do the building
+	cd "$builddir"
+	cargo build --release --target "$CTARGET" 
+}
+
+package() {
+	# Do the installation
+	cd "$builddir"
+	cargo install --path . --root "$pkgdir" --target "$CTARGET"
+}
+
+sha512sums="f15476e6c3b3f2bc5a947348f092d31b5f5f2843d71256b15ff1d80b0e991897ee540e01fa5f1198713dc0f637ab751e9667d5a58e1743386f6f19731db9d956  npk.tar.gz"

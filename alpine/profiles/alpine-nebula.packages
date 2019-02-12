@@ -6,4 +6,6 @@ openssl
 openssh
 chrony
 tzdata
-nano
+cargo
+lz4
+npk

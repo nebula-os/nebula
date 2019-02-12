@@ -1,4 +1,4 @@
-1. Check why the system is not booting correctly
+1. Check why the system is not booting correctly (Done)
     * Maybe you are not supposed to manually install the packages before the script is run
 2. Research the package managers
     * Maybe look into how apk works

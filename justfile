@@ -13,6 +13,10 @@ docker-package-run: docker-package-build
     echo "Running the 'package-builder'."
     rm ./work/package -rf
     mkdir ./work/package -p
+    # Prepare the npk
+    mkdir work/npk -p
+    tar -zcvf work/npk/npk.tar.gz npk
+    cp work/npk/npk.tar.gz alpine/packages/npk/npk.tar.gz -f
     sudo docker run -v "$(pwd)/alpine:/nebula" -v "$(pwd)/work/package:/nebula-work" nebula-package
 
 docker-iso-build:
@@ -27,4 +31,4 @@ docker-iso-run: docker-iso-build docker-package-run
 # Qemu testing
 qemu: qemu-x86_64
 qemu-x86_64:
-    qemu-system-x86_64 -boot d -cdrom work/iso/alpine-nebula.iso -m 512
+    qemu-system-x86_64 -enable-kvm -boot d -cdrom work/iso/alpine-nebula.iso -m 2048

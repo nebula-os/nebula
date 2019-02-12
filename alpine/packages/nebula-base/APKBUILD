@@ -31,7 +31,7 @@ Kernel \\r on an \\m (\\l)
 
 EOF
 
-	_ver="$(echo "$pkgver" | grep -E -o '^[0-9]+\.[0-9]+')"
+	_ver="$(echo "$pkgver" | grep -E -o '^[0-9]+\.[0-9]+\.[0-9]+')"
 	# create os-release
 	cat >"$pkgdir"/etc/os-release<<EOF
 NAME="Nebula OS"

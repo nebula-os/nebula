@@ -2,6 +2,8 @@
 # We infer that there are /nebula and /nebula-work folders mounted
 FROM alpine:latest
 
+ENV TARGET "x86_64"
+
 # Setup for creating packages
 RUN apk add alpine-sdk
 RUN adduser -G abuild -g "Alpine Package Builder" -s /bin/ash -D builder \
@@ -21,8 +23,8 @@ CMD abuild-keygen -i -a ;\
     cd /nebula/packages/nebula-base ;\
     abuild checksum ;\
     abuild -r -P /nebula-work ;\
-    # Build nebula-init
-    cd /nebula/packages/nebula-init ;\
+    # Build npk
+    cd /nebula/packages/npk ;\
     abuild checksum ;\
     abuild -r -P /nebula-work ;\
     # Re-own the directories
