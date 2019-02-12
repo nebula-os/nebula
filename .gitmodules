@@ -1,3 +1,6 @@
 [submodule "alpine/iso"]
 	path = alpine/iso
 	url = git://git.alpinelinux.org/alpine-iso
+[submodule "npk"]
+	path = npk
+	url = https://github.com/skyne98/npk
