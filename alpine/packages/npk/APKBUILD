@@ -27,4 +27,4 @@ package() {
 	cargo install --path . --root "$pkgdir" --target "$CTARGET"
 }
 
-sha512sums="f15476e6c3b3f2bc5a947348f092d31b5f5f2843d71256b15ff1d80b0e991897ee540e01fa5f1198713dc0f637ab751e9667d5a58e1743386f6f19731db9d956  npk.tar.gz"
+sha512sums="6910b13f492f76dce652fff1cd420254e8500ee5b65e368ea4375cdcbe2333b4c094816ae6072e7dcf3391d917d1efe67a5aeafdc55e12b06193c27adfe9d5d1  npk.tar.gz"

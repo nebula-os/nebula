@@ -1,0 +1,1 @@
+By default the packages are installed in the ~/Packages folder and are accessible by one user only.
